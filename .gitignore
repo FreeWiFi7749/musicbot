@@ -1,4 +1,18 @@
-/.DS_Store
+# 環境設定ファイル
 /.env
-/.vscode
-/README.md
+
+# Mac OS のシステムファイル
+.DS_Store
+
+# 開発ツールの設定
+.vscode/
+
+# 開発用ディレクトリ
+dev/
+
+# データディレクトリ
+data/
+
+# Python コンパイル済みファイル
+__pycache__/
+*.pyc
