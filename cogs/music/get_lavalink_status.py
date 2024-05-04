@@ -41,12 +41,13 @@ class GetLavalinkStatusCog(commands.Cog):
 
                 # ノードに接続されているすべてのプレイヤーをイテレート
                 for player in node.players.values():
-                    guild = self.bot.get_guild(player.guild_id)
+                    guild = self.bot.get_guild(player.guild.id)
                     if guild:
+                        channel_id = guild.voice_client.channel.id
                         total_players += len(guild.members)
                         # プレイヤーが接続されているか確認
                         if player.connected:
-                            active_players += sum(1 for member in guild.get_channel(player.channel_id).members if not member.bot)
+                            active_players += sum(1 for member in guild.get_channel(channel_id).members if not member.bot)
 
 
                 node_info = await self.get_guild_node_info(ctx.guild.id)

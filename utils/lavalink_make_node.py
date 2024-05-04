@@ -1,7 +1,7 @@
 import json
 import os
-import wavelink
 from discord.ext import commands
+import wavelink
 
 def load_node_config(guild_id):
     """ 特定のギルドのLavalinkノード設定をロードします。 """

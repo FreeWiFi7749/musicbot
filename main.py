@@ -15,7 +15,6 @@ from utils.lavalink_make_node import connect_node
 from discord.ui import View, Button, Modal, TextInput
 import wavelink
 import pytz
-import wavelink
 
 load_dotenv()
 

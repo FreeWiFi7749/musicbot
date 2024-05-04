@@ -14,6 +14,7 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.wavelink = wavelink.Pool()
+        self.is_24_7_mode = False
 
     @commands.hybrid_group(name='music', aliases=['m'])
     async def music(self, ctx):
@@ -122,6 +123,7 @@ class Music(commands.Cog):
         hours = total_seconds // 3600
         minutes = (total_seconds % 3600) // 60
         embed.set_footer(text=f'Queue - {len(player.queue)}曲 | Time - {hours}時間 {minutes}分')
+        embed.set_image(url='https://image.frwi.net/uploads/D3E24B95-2EAE-4C18-AF8E-3DC8BEB31866.webp')
         queue_tracks = list(player.queue)
 
         if queue_tracks:
@@ -214,14 +216,27 @@ class Music(commands.Cog):
         await ctx.send("再生キューをシャッフルしました。")
 
     @music.command(name='loop', aliases=['l'])
-    async def loop(self, ctx):
-        """再生キューをループ再生します。"""
+    async def loop(self, ctx, *, option: str = None):
+        """再生キューをループ再生します。オプション: none, track, all"""
         if ctx.voice_client is None:
             await self.voice_none(ctx)  
             return      
         player = ctx.voice_client
-        player.loop = not player.loop
-        await ctx.send(f'ループ再生: {player.loop}')
+
+        # オプションに基づいてループモードを設定
+        if option == 'track':
+            await player.queue.set_mode(wavelink.QueueMode.loop)
+            mode_description = "現在のトラックをループ"
+        elif option == 'all':
+            await player.queue.set_mode(wavelink.QueueMode.loop_all)
+            mode_description = "全てのトラックをループ"
+        elif option == 'none':
+            await player.queue.set_mode(wavelink.QueueMode.normal)
+            mode_description = "ループなし"
+        else:
+            return await ctx.send("オプションは 'none', 'track', 'all' のいずれかである必要があります。")
+
+        await ctx.send(f'ループモード変更: {mode_description}')
 
     @music.command(name='nowplaying', aliases=['np'])
     async def nowplaying(self, ctx):
@@ -235,14 +250,25 @@ class Music(commands.Cog):
         embed = await self.now_playing_embed(player.current, ctx.author)
         await ctx.send(embed=embed, silent=True)
 
+    @music.command(name='24-7', aliases=['247'])
+    async def twenty_four_seven(self, ctx, mode: bool):
+        """24/7モードを設定します。"""
+        self.is_24_7_mode = mode
+        mode_status = "有効" if mode else "無効"
+        await ctx.send(f"24/7モードを{mode_status}に設定しました。")
+
+
     @commands.Cog.listener()
     async def on_wavelink_track_end(self, payload: wavelink.TrackEndEventPayload) -> None:
         # payload.player が None でないことを確認
         if payload.player is None:
             print("payload.player が None です。")
             return
-
-        # payload.player.queue が存在することを確認
+        
+        if self.is_24_7_mode:
+            if payload.player.queue.is_empty:
+                return await payload.player.play(payload.track)
+            
         if not hasattr(payload.player, 'queue'):
             print("payload.player に queue 属性がありません。")
             return
