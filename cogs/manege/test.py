@@ -25,3 +25,7 @@ class RouletteCog(commands.Cog):
 def setup(bot):
     bot.add_cog(RouletteCog(bot))
 
+bfiuasfuhaifuhiuaghuaighuahgahgiouahiug
+agagyahguihauihguaigiuagiuauig
+gasiyfhguahguhaeguhaugiheoigh
+gaiugiuauihguaehgoag
