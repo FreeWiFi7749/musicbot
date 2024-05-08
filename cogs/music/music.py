@@ -37,10 +37,18 @@ class Music(commands.Cog):
         await ctx.defer()
 
         if "youtube.com" in query or "youtu.be" in query or "soundcloud.com" in query:
-            tracks = await wavelink.Pool.fetch_tracks(query)
+            try:
+                tracks = await wavelink.Pool.fetch_tracks(query)
+            except Exception as e:
+                print(e)
+                return await ctx.send('その曲は見つかりませんでした。')
         else:
-            tracks = await wavelink.Pool.fetch_tracks(f'ytsearch:{query}')
-    
+            try:
+                tracks = await wavelink.Pool.fetch_tracks(f'ytsearch:{query}')
+            except Exception as e:
+                print(e)
+                return await ctx.send('その曲は見つかりませんでした。')
+
         if not tracks:
             return await ctx.send('その曲は見つかりませんでした。')
 
