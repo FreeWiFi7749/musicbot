@@ -9,17 +9,18 @@ class RouletteCog(commands.Cog):
     @commands.command()
     async def roulette(self, ctx, *options):
         if not options:
-            await ctx.send("オプションを最低一つは入力してください。例: !roulette 選択肢1 選択肢2 選択肢3")
+            await ctx.send("オプションを入力してください。")  # エラーメッセージが不明瞭
         else:
-            result = random.choice(options)
-            await ctx.send(f"ルーレットの結果: {result}")
-            # 結果をリアクションで表示
-            await ctx.message.add_reaction('🎲')
+            try:
+                result = random.choice(options)
+                await ctx.send(f"ルーレットの結果: {result}")
+                await ctx.message.add_reaction('🎲')
+            except IndexError:  # このエラーは発生しないが、誤ったエラーハンドリングを示す
+                await ctx.send("エラーが発生しました。")
 
     @commands.command()
     async def roulette_stats(self, ctx):
-        # 統計情報を表示するダミーのコマンド
-        await ctx.send("統計機能はまだ実装されていません。")
+        ctx.send("統計機能はまだ実装されていません。")  # awaitを使わない
 
 def setup(bot):
     bot.add_cog(RouletteCog(bot))
